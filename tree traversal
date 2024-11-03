@@ -1,0 +1,149 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+};
+
+struct Node* createNode(int data) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = data;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    return newNode;
+}
+
+void recursivePreOrder(struct Node* root) {
+    if (root == NULL) return;
+    printf("%d ", root->data);
+    recursivePreOrder(root->left);
+    recursivePreOrder(root->right);
+}
+
+void recursiveInOrder(struct Node* root) {
+    if (root == NULL) return;
+    recursiveInOrder(root->left);
+    printf("%d ", root->data);
+    recursiveInOrder(root->right);
+}
+
+void recursivePostOrder(struct Node* root) {
+    if (root == NULL) return;
+    recursivePostOrder(root->left);
+    recursivePostOrder(root->right);
+    printf("%d ", root->data);
+}
+
+void nonRecursiveInOrder(struct Node* root) {
+    struct Node* stack[100]; 
+    int top = -1; 
+    struct Node* current = root;
+
+    while (current != NULL || top != -1) {
+      
+        while (current != NULL) {
+            stack[++top] = current; 
+            current = current->left;
+        }
+
+        current = stack[top--]; 
+        printf("%d ", current->data);
+
+        current = current->right;
+    }
+}
+
+void nonRecursivePreOrder(struct Node* root) {
+    if (root == NULL) return;
+
+    struct Node* stack[100]; 
+    int top = -1; 
+
+    stack[++top] = root; 
+
+    while (top != -1) {
+        struct Node* current = stack[top--]; 
+        printf("%d ", current->data); 
+
+        if (current->right != NULL)
+            stack[++top] = current->right;
+        if (current->left != NULL)
+            stack[++top] = current->left;
+    }
+}
+
+void nonRecursivePostOrder(struct Node* root) {
+    if (root == NULL) return;
+
+    struct Node* stack1[100], *stack2[100]; 
+    int top1 = -1, top2 = -1; 
+
+    stack1[++top1] = root; 
+
+    while (top1 != -1) {
+        struct Node* current = stack1[top1--]; 
+        stack2[++top2] = current; 
+        if (current->left != NULL)
+            stack1[++top1] = current->left;
+        if (current->right != NULL)
+            stack1[++top1] = current->right;
+    }
+
+    while (top2 != -1) {
+        printf("%d ", stack2[top2--]->data); 
+    }
+}
+struct Node* insertLevelOrder(int arr[], int i, int n) {
+    if (i < n) {
+        struct Node* root = createNode(arr[i]);
+        root->left = insertLevelOrder(arr, 2 * i + 1, n);
+        root->right = insertLevelOrder(arr, 2 * i + 2, n);
+        return root;
+    }
+    return NULL;
+}
+
+int main() {
+    int n;
+
+    printf("Enter the number of nodes in the binary tree: ");
+    scanf("%d", &n);
+
+    int* arr = (int*)malloc(n * sizeof(int));
+
+    printf("Enter the node values (level order):\n");
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &arr[i]);
+    }
+
+    struct Node* root = insertLevelOrder(arr, 0, n);
+
+    printf("\nRecursive Pre-order: ");
+    recursivePreOrder(root);
+    printf("\n");
+
+    printf("Recursive In-order: ");
+    recursiveInOrder(root);
+    printf("\n");
+
+    printf("Recursive Post-order: ");
+    recursivePostOrder(root);
+    printf("\n");
+
+    printf("Non-recursive In-order: ");
+    nonRecursiveInOrder(root);
+    printf("\n");
+
+    printf("Non-recursive Pre-order: ");
+    nonRecursivePreOrder(root);
+    printf("\n");
+
+    printf("Non-recursive Post-order: ");
+    nonRecursivePostOrder(root);
+    printf("\n");
+
+    free(arr); 
+    return 0;
+}
