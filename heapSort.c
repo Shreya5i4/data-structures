@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <std.h>
 #include <stdlib.h>
 
 void swap(int *x, int *y) {
